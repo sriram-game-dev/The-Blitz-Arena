@@ -4,48 +4,77 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] float speed = 8f;
-    [SerializeField] float maxDistance = 5f;
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float maxDistance = 5f;
 
-    Rigidbody rb;
-    Vector3 startPos;
-    Action<Projectile> releaseToPool;
-    bool inFlight;
+    private Rigidbody rb;
 
-    void Awake() => rb = GetComponent<Rigidbody>();
+    private Vector3 startPos;
 
-    // Called once by the pool when this projectile is created
-    public void SetPool(Action<Projectile> release) => releaseToPool = release;
+    private Action<Projectile> releaseToPool;
+
+    private bool inFlight;
+
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+
+    public void SetPool(Action<Projectile> release)
+    {
+        releaseToPool = release;
+    }
+
 
     public void Launch(Vector3 position, Vector3 direction)
     {
-        transform.SetPositionAndRotation(position, Quaternion.LookRotation(direction));
+        transform.SetPositionAndRotation(
+            position,
+            Quaternion.LookRotation(direction)
+        );
+
         startPos = position;
 
-        // Reset physics state so no old velocity carries over from the last shot
-        rb.linearVelocity = Vector3.zero;          // Unity 2022: rb.velocity
+        // Unity 2022
+        rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        rb.linearVelocity = direction.normalized * speed;
+
+        rb.linearVelocity =
+            direction.normalized * speed;
 
         inFlight = true;
     }
 
-    void Update()
+
+    private void Update()
     {
-        // Miss: flew more than 5 m, so return it to the pool
-        if (inFlight && (transform.position - startPos).sqrMagnitude > maxDistance * maxDistance)
+        if (inFlight &&
+            (transform.position - startPos).sqrMagnitude >
+            maxDistance * maxDistance)
+        {
             Despawn();
+        }
     }
 
-    void OnCollisionEnter(Collision collision)
+
+    private void OnCollisionEnter(Collision collision)
     {
-        // Hit anything: return to pool (Target handles its own destruction)
-        if (inFlight) Despawn();
+        if (inFlight)
+        {
+            Despawn();
+        }
     }
 
-    void Despawn()
+
+    private void Despawn()
     {
-        inFlight = false;          // prevents double-release (hit + distance in the same frame)
+        inFlight = false;
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
         releaseToPool?.Invoke(this);
     }
 }

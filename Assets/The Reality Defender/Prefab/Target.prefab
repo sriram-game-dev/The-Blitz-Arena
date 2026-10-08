@@ -154,4 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Target
   explosionPrefab: {fileID: 3638172214929271566, guid: 3b45a45cdf40d4e4899a6b82762835ca, type: 3}
+  explosionSound: {fileID: 8300000, guid: 52a42cf84d447b94fa5e0c8c3e1e1fb3, type: 3}
+  explosionVolume: 1
   points: 10

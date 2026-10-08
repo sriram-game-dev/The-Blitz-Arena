@@ -1,21 +1,13 @@
-using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Prefabs")]
-    [SerializeField] GameObject targetPrefab;
-
-    [Header("UI")]
-    [SerializeField] TMP_Text scoreText;
-    [SerializeField] TMP_Text instructionText;
-   // [SerializeField] TMP_Text waveClearedText;
-    [SerializeField] GameObject fireButton;
-    [SerializeField] GameObject restartButton;
 
     [Header("Target positions (local to base)")]
+
     [SerializeField] Vector3[] targetOffsets =
     {
         new Vector3(-0.25f, 0.5f, 0f),
@@ -23,74 +15,169 @@ public class GameManager : MonoBehaviour
         new Vector3( 0.25f, 0.5f, 0f),
     };
 
-    Transform baseTransform;
-    int score;
-    int remaining;
 
-    void Awake() => Instance = this;
+    private Transform baseTransform;
 
-    void OnEnable()  => Placement.OnBasePlaced += HandleBasePlaced;
-    void OnDisable() => Placement.OnBasePlaced -= HandleBasePlaced;
+    public int score;
+    private int remaining;
 
-    void Start()
+    private List<GameObject> spawnedTargets =
+        new List<GameObject>();
+
+
+    private void Awake()
     {
-        fireButton.SetActive(false);
-        restartButton.SetActive(false);
-        scoreText.text = "Score: 0";
-        instructionText.text = "Move your phone to find a surface,\nthen tap to place the arena";
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
     }
+
+
+    private void OnEnable()
+    {
+        Placement.OnBasePlaced += HandleBasePlaced;
+    }
+
+
+    private void OnDisable()
+    {
+        Placement.OnBasePlaced -= HandleBasePlaced;
+    }
+
+
+    // =========================================================
+    // BASE PLACED
+    // =========================================================
 
     void HandleBasePlaced(GameObject baseObj)
     {
         baseTransform = baseObj.transform;
-        instructionText.gameObject.SetActive(false);
-        fireButton.SetActive(true);
+
+        UiManager.Instance.GamePlaced();
+
         StartWave();
+
+        // Enable shooting
+        Cannon cannon = FindFirstObjectByType<Cannon>();
+
+        if (cannon != null)
+            cannon.SetCanFire(true);
     }
 
-    void StartWave()
+
+    // =========================================================
+    // START WAVE
+    // =========================================================
+
+void StartWave()
+{
+    if (baseTransform == null)
     {
-        score = 0;
-        UpdateScore();
-        
-
-        restartButton.SetActive(false);
-        fireButton.SetActive(true);
-
-        remaining = targetOffsets.Length;
-        foreach (Vector3 offset in targetOffsets)
-        {
-            GameObject t = Instantiate(targetPrefab, baseTransform);
-            t.transform.localPosition = offset;
-        }
+        Debug.LogWarning("Base has not been placed.");
+        return;
     }
+
+    ClearTargets();
+
+    score = 0;
+    remaining = targetOffsets.Length;
+
+    UiManager.Instance.UpdateScore(score);
+
+    foreach (Vector3 offset in targetOffsets)
+    {
+        GameObject target =
+            Instantiate(
+                ResourceManager.Instance.targetPrefab,
+                baseTransform
+            );
+
+        target.transform.localPosition = offset;
+
+        spawnedTargets.Add(target);
+    }
+
+    // Start the task timer
+    UiManager.Instance.StartTask();
+}
+
+
+    // =========================================================
+    // CLEAR TARGETS
+    // =========================================================
+
+    void ClearTargets()
+    {
+        foreach (GameObject target in spawnedTargets)
+        {
+            if (target != null)
+                Destroy(target);
+        }
+
+        spawnedTargets.Clear();
+    }
+
+
+    // =========================================================
+    // TARGET DESTROYED
+    // =========================================================
 
     public void OnTargetDestroyed(int points)
     {
         score += points;
+
         remaining--;
-        UpdateScore();
+
+        UiManager.Instance.UpdateScore(score);
+
 
         if (remaining <= 0)
         {
-           // waveClearedText.gameObject.SetActive(true);
-            instructionText.gameObject.SetActive(true);
-            instructionText.text = "Wave Cleared";
-            fireButton.SetActive(false);
-            restartButton.SetActive(true);
+    
+            UiManager.Instance.CompleteTask();
+            UiManager.Instance.WaveCompleted(score);
+
+            Cannon cannon =
+                FindFirstObjectByType<Cannon>();
+
+            if (cannon != null)
+                cannon.SetCanFire(false);
         }
     }
 
-    void UpdateScore(){
 
-        scoreText.text = $"Score: {score}";
+    // =========================================================
+    // RESTART
+    // =========================================================
 
-    } 
+public void Restart()
+{
+    Time.timeScale = 1f;
 
-    // Hook to Restart button's OnClick
-    public void Restart(){
+    Placement placement = FindFirstObjectByType<Placement>();
 
+    if (placement != null && placement.IsPlaced())
+    {
+        // Arena already exists
         StartWave();
-        
+
+        UiManager.Instance.GamePlaced();
+
+        Cannon cannon = FindFirstObjectByType<Cannon>();
+
+        if (cannon != null)
+            cannon.SetCanFire(true);
     }
+    else
+    {
+        // Still scanning / arena not placed
+        StartWave();
+
+        UiManager.Instance.ResetToScanningState();
+    }
+}
 }
