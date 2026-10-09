@@ -3,8 +3,6 @@
 An AR target-practice mini-game for Android, built in Unity with AR Foundation.
 Scan a surface, tap to place the arena, then shoot energy-filled targets with a cannon that fires from your phone camera.
 
----
-
 ## Demo
 
 - **Screen recording:** `[add Google Drive link]`
