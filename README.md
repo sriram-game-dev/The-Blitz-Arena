@@ -141,6 +141,8 @@ Exposed properties: `GridColor`, `GridScale`, `LineWidth`, `FillAlpha`.
 | Shoot | Tap the **FIRE** button |
 | Play again | Tap **Restart** after WAVE CLEARED |
 
-## Author
+## 👤 Author
 
-`[Your Name]` · GitHub: [@sriram-game-dev](https://github.com/sriram-game-dev) · `[email / LinkedIn]`
+**Sriram S**
+- GitHub: [@sriram-game-dev](https://github.com/sriram-game-dev)
+- Portfolio: [sriram-game-dev.github.io/profile](https://sriram-game-dev.github.io/profile/)
