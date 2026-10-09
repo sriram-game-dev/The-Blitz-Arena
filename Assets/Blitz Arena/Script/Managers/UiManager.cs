@@ -113,8 +113,11 @@ void StartGameFunction()
 
     ResourceManager.Instance.arCameraBackground.enabled = true;
 
-    Placement placement =
-        FindFirstObjectByType<Placement>();
+    // Reset AR tracking and plane detection
+    if (ResourceManager.Instance.arSession != null)
+        ResourceManager.Instance.arSession.Reset();
+
+    Placement placement = FindFirstObjectByType<Placement>();
 
     if (placement != null)
         placement.SetCanPlace(true);
@@ -485,12 +488,21 @@ public void ResetToScanningState()
             .onClick.AddListener(MainMenuFunction);
     }
 
-    void MainMenuFunction()
-    {
+
+void MainMenuFunction()
+{
     Time.timeScale = 1f;
 
-    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    // Stop shooting
+    Cannon cannon = FindFirstObjectByType<Cannon>();
+    if (cannon != null)
+        cannon.SetCanFire(false);
+
+    // Reload scene
+    SceneManager.LoadScene(
+        SceneManager.GetActiveScene().buildIndex
+    );
+}
 
     // =========================================================
     // QUIT

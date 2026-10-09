@@ -209,7 +209,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &150620162
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3873,7 +3873,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The Reality Defender
+  m_text: The Blitz Arena
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b89bb69b32d48e24b897e761d54a00c0, type: 2}
   m_sharedMaterial: {fileID: 5211487200449286432, guid: b89bb69b32d48e24b897e761d54a00c0, type: 2}
@@ -5102,6 +5102,7 @@ MonoBehaviour:
   targetPrefab: {fileID: 2986387777671027200, guid: 9ec19238e9c870c4a9e0677cd7b87b1e, type: 3}
   arCameraBackground: {fileID: 845719447}
   arPlaneManager: {fileID: 1375737370}
+  arSession: {fileID: 773190231}
   MainMenuPage: {fileID: 150620161}
   StartBtn: {fileID: 376340295}
   QuitBtn: {fileID: 316534448}

@@ -14,6 +14,8 @@ public class ResourceManager : MonoBehaviour
     public ARCameraBackground arCameraBackground;
     public ARPlaneManager arPlaneManager;
 
+    public ARSession arSession;
+
     // =========================
     // MAIN MENU
     // =========================
