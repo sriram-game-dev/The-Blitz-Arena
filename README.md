@@ -8,7 +8,6 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - **Screen recording:** `[add Google Drive link]`
 - **Shader Graph screenshot:** `[add Google Drive link]`
 
-
 ## Gameplay
 
 1. Move your phone to scan the floor or a table. A grid shows the detected plane.
@@ -17,8 +16,6 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 4. Press **FIRE** to shoot a projectile from the camera.
 5. Hit a target to destroy it (+10 score).
 6. Clear all 3 targets to see **WAVE CLEARED**, then press **Restart** to play again.
-
----
 
 ## Features
 
@@ -51,8 +48,6 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - Score counter UI and **WAVE CLEARED** message when all targets are cleared
 - Sound effects for firing and explosions
 
----
-
 ## Tech Stack
 
 | | |
@@ -62,8 +57,6 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 | AR | AR Foundation + Google ARCore XR Plugin |
 | UI | TextMeshPro |
 | Platform | Android (ARCore-supported device) |
-
----
 
 ## Project Structure
 
@@ -90,8 +83,6 @@ Assets/
         └── Shapes/        # UI shapes
 ```
 
----
-
 ## Shader Graph Overview
 
 `EnergyTarget` has three effect groups:
@@ -102,7 +93,15 @@ Assets/
 | **Fresnel Rim** | Fresnel Effect x RimColor (HDR) | Glowing edge |
 | **Vertex Wobble** | Sine(Position.y x Frequency + Time x Speed) x Amount x Normal + Position → Vertex Position | Surface ripples and wobbles |
 
----
+`PlaneMaterial` has three effect groups:
+
+| Group | Nodes | Result |
+|---|---|---|
+| **Scrolling Noise** | Position (Object) + Time x ScrollSpeed → Gradient Noise → Saturate → Power → Lerp (BaseColor / EnergyColor) | Flowing energy pattern, seamless on a sphere |
+| **Fresnel Rim** | Fresnel Effect x RimColor (HDR) | Glowing edge |
+| **Vertex Wobble** | Sine(Position.y x Frequency + Time x Speed) x Amount x Normal + Position → Vertex Position | Surface ripples and wobbles |
+
+
 
 ## Getting Started
 
@@ -132,8 +131,6 @@ Assets/
 
 > AR features (camera feed, plane detection) do not work in the Unity Editor. Test on a real device.
 
----
-
 ## Controls
 
 | Action | Input |
@@ -141,8 +138,6 @@ Assets/
 | Place arena | Tap the screen on a detected surface |
 | Shoot | Tap the **FIRE** button |
 | Play again | Tap **Restart** after WAVE CLEARED |
-
----
 
 ## Author
 
