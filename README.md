@@ -52,7 +52,7 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 
 | | |
 |---|---|
-| Engine | Unity `[6000.3.24f1 LTS]` |
+| Engine | Unity `6000.3.24f1 LTS` |
 | Render pipeline | Universal Render Pipeline (URP) |
 | AR | AR Foundation + Google ARCore XR Plugin |
 | UI | TextMeshPro |
@@ -85,28 +85,30 @@ Assets/
 
 ## Shader Graph Overview
 
-`EnergyTarget` has three effect groups:
+### `EnergyTarget` (target shader)
 
 | Group | Nodes | Result |
 |---|---|---|
-| **Scrolling Noise** | Position (Object) + Time x ScrollSpeed → Gradient Noise → Saturate → Power → Lerp (BaseColor / EnergyColor) | Flowing energy pattern, seamless on a sphere |
+| **Scrolling Noise** | Position (Object) + Time x ScrollSpeed → Gradient Noise → Saturate → Power → Lerp (BaseColor / EnergyColor) | Flowing energy pattern |
 | **Fresnel Rim** | Fresnel Effect x RimColor (HDR) | Glowing edge |
 | **Vertex Wobble** | Sine(Position.y x Frequency + Time x Speed) x Amount x Normal + Position → Vertex Position | Surface ripples and wobbles |
 
-`PlaneMaterial` has three effect groups:
+### `PlaneMaterial` (plane visualizer grid)
 
-| Group | Nodes | Result |
+Transparent URP Unlit shader that draws a cyan grid on detected planes.
+
+| Step | Nodes | Result |
 |---|---|---|
-| **Scrolling Noise** | Position (Object) + Time x ScrollSpeed → Gradient Noise → Saturate → Power → Lerp (BaseColor / EnergyColor) | Flowing energy pattern, seamless on a sphere |
-| **Fresnel Rim** | Fresnel Effect x RimColor (HDR) | Glowing edge |
-| **Vertex Wobble** | Sine(Position.y x Frequency + Time x Speed) x Amount x Normal + Position → Vertex Position | Surface ripples and wobbles |
+| **Cell tiling** | UV x GridScale → Fraction → Subtract 0.5 → Absolute | Distance from the center of each grid cell |
+| **Line mask** | Split → Maximum (R, G) → Smoothstep (0.5 - LineWidth, 0.5) | Thin lines on the cell edges |
+| **Output** | Add FillAlpha → Saturate → Alpha; GridColor (HDR) → Base Color | Faint cyan tint with bright grid lines |
 
-
+Exposed properties: `GridColor`, `GridScale`, `LineWidth`, `FillAlpha`.
 
 ## Getting Started
 
 ### Requirements
-- Unity `[version]` with **Android Build Support** (OpenJDK and Android SDK and NDK)
+- Unity `6000.3.24f1 LTS` with **Android Build Support** (OpenJDK and Android SDK and NDK)
 - An **ARCore-supported Android phone** with Google Play Services for AR installed
 - USB debugging enabled
 
@@ -117,8 +119,8 @@ Assets/
    cd The-Blitz-Arena
    ```
 2. Open the project in Unity Hub with the matching Unity version.
-3. Open the main scene in `Assets/Scenes/`.
-4. **File → Build Profiles / Build Settings → Android → Switch Platform.**
+3. Open the main scene: `Assets/Blitz Arena/Scenes/Scene_Ar_0.0.0`.
+4. **File → Build Profiles → Android → Switch Platform.**
 5. Connect your phone, select it under **Run Device**, and click **Build And Run**.
 
 ### Android settings used
