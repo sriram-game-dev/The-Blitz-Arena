@@ -8,7 +8,6 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - **Screen recording:** `[add Google Drive link]`
 - **Shader Graph screenshot:** `[add Google Drive link]`
 
----
 
 ## Gameplay
 
