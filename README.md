@@ -3,6 +3,8 @@
 An AR target-practice mini-game for Android, built in Unity with AR Foundation.
 Scan a surface, tap to place the arena, then shoot energy-filled targets with a cannon that fires from your phone camera.
 
+> Built in 48 hours for the **"Reality Defender"** mixed reality assignment, covering AR interaction, Shader Graph / VFX, and C# game logic.
+
 ---
 
 ## Demo
@@ -54,23 +56,13 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - Score counter UI and **WAVE CLEARED** message when all targets are cleared
 - Sound effects for firing and explosions
 
-
-### Part 4: The Time (C#)
-
-Include this section only if the timer is implemented in the submitted build.
-
-- A countdown timer is displayed using a UI Slider or progress bar.
-- The countdown starts when gameplay begins after arena placement.
-- The timer decreases while the round is active.
-- When the timer reaches zero, gameplay stops and a **Wave Failed** message is displayed.
-- Restart resets the timer and starts a new round.
 ---
 
 ## Tech Stack
 
 | | |
 |---|---|
-| Engine | Unity `[6000.3.24 LTS]` |
+| Engine | Unity `[6000.3.24f1 LTS]` |
 | Render pipeline | Universal Render Pipeline (URP) |
 | AR | AR Foundation + Google ARCore XR Plugin |
 | UI | TextMeshPro |
@@ -80,35 +72,34 @@ Include this section only if the timer is implemented in the submitted build.
 
 ## Project Structure
 
-## Project Structure
- 
 ```
 Assets/
 └── Blitz Arena/
-    ├── Scenes/            # Main AR scene
+    ├── Scenes/            # Scene_Ar_0.0.0 (main AR scene)
     ├── Script/
-    │   ├── AR/            # PlaceOnPlane.cs (tap-to-place, anchor, plane lock)
-    │   ├── Gameplay/      # Cannon.cs, Projectile.cs, Target.cs (+ TargetBob.cs)
-    │   └── Managers/      # GameManager.cs (score, waves), UiManager.cs (UI state)
-    ├── ShaderGraph/       # SG_EnergyTarget (target), SG_PlaneGrid (plane visualizer)
-    ├── ShaderMaterial/    # Materials built from the shaders
-    ├── Prefab/            # GameBase, Target, Projectile, Explosion, MuzzleFlash, PlaneGrid
-    ├── EFX/               # Particle effects (explosion, muzzle flash, trail)
+    │   ├── AR/            # Placement.cs (tap-to-place, anchor, plane lock)
+    │   ├── Gameplay/      # Cannon.cs, Projectile.cs, Target.cs, TargetBob.cs
+    │   └── Managers/      # GameManager.cs (score, waves), UiManager.cs (UI state),
+    │                      # ResourceManager.cs (shared references)
+    ├── ShaderGraph/       # EnergyTarget (target shader), PlaneMaterial (plane visualizer)
+    ├── ShaderMaterial/    # Materials built from the shaders, extra URP materials,
+    │                      # particle materials (explosion, muzzle flash, trail)
+    ├── Prefab/            # AR Default Plane, Target, Projectile, Explosion,
+    │                      # MuzzleFlash, Object1
+    ├── EFX/               # Sound effects (muzzle flash, explosion)
     ├── Environment/
-    │   └── Podium/        # Game Base pedestal art
+    │   └── Podium/        # 3D podium model for the Game Base
     └── UI/
-        ├── Font/          # Sci-fi TextMeshPro font assets
-        ├── Images/        # Crosshair, button sprites
+        ├── Font/          # AR Techni (sci-fi font)
+        ├── Images/        # Background images
         └── Shapes/        # UI shapes
 ```
- 
----
 
 ---
 
 ## Shader Graph Overview
 
-`SG_EnergyTarget` has three effect groups:
+`EnergyTarget` has three effect groups:
 
 | Group | Nodes | Result |
 |---|---|---|
@@ -128,7 +119,8 @@ Assets/
 ### Run the project
 1. Clone the repo:
    ```bash
-   git clone [your-repo-url]
+   git clone https://github.com/sriram-game-dev/The-Blitz-Arena.git
+   cd The-Blitz-Arena
    ```
 2. Open the project in Unity Hub with the matching Unity version.
 3. Open the main scene in `Assets/Scenes/`.
@@ -136,7 +128,7 @@ Assets/
 5. Connect your phone, select it under **Run Device**, and click **Build And Run**.
 
 ### Android settings used
-- Minimum API Level: 24+
+- Minimum API Level: 30+
 - Scripting Backend: IL2CPP, Target Architecture: ARM64
 - Graphics API: OpenGLES3
 - XR Plug-in Management → Android → **ARCore** enabled
@@ -159,4 +151,4 @@ Assets/
 
 ## Author
 
-`[Your Name]` · `[email / LinkedIn / portfolio]`
+`[Your Name]` · GitHub: [@sriram-game-dev](https://github.com/sriram-game-dev) · `[email / LinkedIn]`
