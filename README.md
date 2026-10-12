@@ -3,10 +3,15 @@
 An AR target-practice mini-game for Android, built in Unity with AR Foundation.
 Scan a surface, tap to place the arena, then shoot energy-filled targets with a cannon that fires from your phone camera.
 
-## Demo
+## 🎮 Project Preview
 
-- **Screen recording:** `[add Google Drive link]`
-- **Shader Graph screenshot:** `[add Google Drive link]`
+<p align="center">
+  <img
+    src="Project%20Detail/blitz-arena.jpg"
+    alt="The Blitz Arena - Gameplay Preview"
+    width="800"
+  />
+</p>
 
 ## Gameplay
 
