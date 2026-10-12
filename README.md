@@ -32,13 +32,24 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - Placement happens once only; the plane grid is hidden and plane detection stops afterwards
 - Taps on UI (FIRE button) do not trigger placement
 
-<p align="center">
-  <img
-    src="Project%20Detail/AR SURFACE SCANNING & ARENA PLACEMENT.jpg"
-    alt="The Blitz Arena - Scanning Preview"
-    width="300"
-  />
-</p>
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img
+        src="Project%20Detail/AR SURFACE SCANNING & ARENA PLACEMENT.jpg"
+        alt="The Blitz Arena - Scanning Preview"
+        width="100%"
+      />
+    </td>
+    <td align="center" width="50%">
+      <img
+        src="Project%20Detail/2.png"
+        alt="The Blitz Arena - Scanned Preview"
+        width="100%"
+      />
+    </td>
+  </tr>
+</table>
 
 ### Part 2: The Juice (Shader Graph and VFX)
 - **Custom Shader Graph** for the targets (no standard materials), URP Unlit:
