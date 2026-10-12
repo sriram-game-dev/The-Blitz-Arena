@@ -1,145 +1,153 @@
-# The Blitz Arena 🎯
+# The Blitz Arena
 
-**The Blitz Arena** is an Android Augmented Reality (AR) target-practice mini-game built with **Unity 6**, **AR Foundation**, and **Google ARCore**. Scan a real-world surface, place the arena, and fire a cannon at floating energy targets.
+An AR target-practice mini-game for Android, built in Unity with AR Foundation.
+Scan a surface, tap to place the arena, then shoot energy-filled targets with a cannon that fires from your phone camera.
 
-## 📸 Project Screenshots
-
-> Screenshots are loaded from the repository's `Project Detail` folder. To make these image links work, use the filenames below for your portrait screenshots, or update the paths to match your existing filenames.
-
-<p align="center">
-  <img src="Project%20Detail/01-ar-scanning.png" alt="AR surface scanning" width="220">
-  &nbsp;&nbsp;
-  <img src="Project%20Detail/02-ar-placement.png" alt="Arena placement in AR" width="220">
-  &nbsp;&nbsp;
-  <img src="Project%20Detail/03-gameplay.png" alt="Cannon gameplay and targets" width="220">
-</p>
+## 🎮 Project Preview
 
 <p align="center">
-  <em>AR scanning · Arena placement · Gameplay</em>
+  <img
+    src="Project%20Detail/blitz-arena.jpg"
+    alt="The Blitz Arena - Gameplay Preview"
+    width="800"
+  />
 </p>
 
-## 🎮 Gameplay
+## Gameplay
 
-1. Move your phone to scan a floor or table.
-2. Tap a detected surface to place the arena.
-3. Aim using the phone's camera view.
-4. Tap **FIRE** to launch a projectile at an energy target.
-5. Earn **10 points** for each successful hit.
-6. Destroy all three targets to clear the wave, then restart to play again.
+1. Move your phone to scan the floor or a table. A grid shows the detected plane.
+2. **Tap the screen** to place the Game Base on the surface.
+3. Three energy targets float above the base.
+4. Press **FIRE** to shoot a projectile from the camera.
+5. Hit a target to destroy it (+10 score).
+6. Clear all 3 targets to see **WAVE CLEARED**, then press **Restart** to play again.
 
-## ✨ Features
+## Features
 
-- **AR plane detection:** Detects horizontal surfaces using AR Foundation.
-- **Tap-to-place arena:** Places the game base at the detected surface pose.
-- **World anchoring:** Uses an `ARAnchor` to keep the placed base stable.
-- **Energy target shader:** Shader Graph effects including animated noise, glowing Fresnel edges, and vertex wobble.
-- **Gameplay VFX:** Projectile trails, muzzle flashes, and target-destruction effects.
-- **Scoring and wave completion:** Adds 10 points per hit and displays a wave-cleared state after all three targets are destroyed.
-- **Projectile pooling:** Reuses projectiles with `UnityEngine.Pool.ObjectPool`.
-- **Audio feedback:** Firing and explosion sound effects.
+### Part 1: The Arena (AR Interaction)
+- Horizontal plane detection with AR Foundation
+- Tap-to-place using `ARRaycastManager` (`PlaneWithinPolygon`)
+- Base placed with the raycast hit **pose**, so it sits flat on the surface with no tilt or floating
+- `ARAnchor` added on placement so the base stays fixed in the real world
+- Placement happens once only; the plane grid is hidden and plane detection stops afterwards
+- Taps on UI (FIRE button) do not trigger placement
 
-## 🛠 Tech Stack
+### Part 2: The Juice (Shader Graph and VFX)
+- **Custom Shader Graph** for the targets (no standard materials), URP Unlit:
+  - **Scrolling gradient noise** for a flowing energy look
+  - **Fresnel rim light** with HDR color for glow under Bloom
+  - **Vertex displacement** (sine wobble along normals) so targets feel volatile
+  - Exposed properties: colors, rim power, noise scale, scroll speed, wobble amount, speed, and frequency
+- **Particle explosion** when a target is destroyed
+- Custom **plane grid shader** for the detected-surface visualizer
+- **Muzzle flash** and **projectile trail** effects
+- Bloom post-processing with HDR
 
-| Component | Technology |
+### Part 3: The Game Loop (C#)
+- Main Camera acts as a cannon; a UI **FIRE** button spawns a projectile moving forward
+- Projectile uses a `Rigidbody` with continuous collision detection
+- **Object pooling** (`UnityEngine.Pool.ObjectPool`) for projectiles
+- **Hit:** target is destroyed with VFX and sound, score +10
+- **Miss:** projectile is returned to the pool after flying more than 5 m
+- Game Base spawns 3 floating targets as its children
+- Score counter UI and **WAVE CLEARED** message when all targets are cleared
+- Sound effects for firing and explosions
+
+## Tech Stack
+
+| | |
 |---|---|
-| Game engine | Unity `6000.3.24f1 LTS` |
+| Engine | Unity `6000.3.24f1 LTS` |
 | Render pipeline | Universal Render Pipeline (URP) |
-| AR framework | AR Foundation |
-| Android AR provider | Google ARCore XR Plugin |
+| AR | AR Foundation + Google ARCore XR Plugin |
 | UI | TextMeshPro |
-| Language | C# |
-| Platform | Android (ARCore-supported devices) |
+| Platform | Android (ARCore-supported device) |
 
-## 🚀 Getting Started
+## Project Structure
+
+```
+Assets/
+└── Blitz Arena/
+    ├── Scenes/            # Scene_Ar_0.0.0 (main AR scene)
+    ├── Script/
+    │   ├── AR/            # Placement.cs (tap-to-place, anchor, plane lock)
+    │   ├── Gameplay/      # Cannon.cs, Projectile.cs, Target.cs, TargetBob.cs
+    │   └── Managers/      # GameManager.cs (score, waves), UiManager.cs (UI state),
+    │                      # ResourceManager.cs (shared references)
+    ├── ShaderGraph/       # EnergyTarget (target shader), PlaneMaterial (plane visualizer)
+    ├── ShaderMaterial/    # Materials built from the shaders, extra URP materials,
+    │                      # particle materials (explosion, muzzle flash, trail)
+    ├── Prefab/            # AR Default Plane, Target, Projectile, Explosion,
+    │                      # MuzzleFlash, Object1
+    ├── EFX/               # Sound effects (muzzle flash, explosion)
+    ├── Environment/
+    │   └── Podium/        # 3D podium model for the Game Base
+    └── UI/
+        ├── Font/          # AR Techni (sci-fi font)
+        ├── Images/        # Background images
+        └── Shapes/        # UI shapes
+```
+
+## Shader Graph Overview
+
+### `EnergyTarget` (target shader)
+
+| Group | Nodes | Result |
+|---|---|---|
+| **Scrolling Noise** | Position (Object) + Time x ScrollSpeed → Gradient Noise → Saturate → Power → Lerp (BaseColor / EnergyColor) | Flowing energy pattern |
+| **Fresnel Rim** | Fresnel Effect x RimColor (HDR) | Glowing edge |
+| **Vertex Wobble** | Sine(Position.y x Frequency + Time x Speed) x Amount x Normal + Position → Vertex Position | Surface ripples and wobbles |
+
+### `PlaneMaterial` (plane visualizer grid)
+
+Transparent URP Unlit shader that draws a cyan grid on detected planes.
+
+| Step | Nodes | Result |
+|---|---|---|
+| **Cell tiling** | UV x GridScale → Fraction → Subtract 0.5 → Absolute | Distance from the center of each grid cell |
+| **Line mask** | Split → Maximum (R, G) → Smoothstep (0.5 - LineWidth, 0.5) | Thin lines on the cell edges |
+| **Output** | Add FillAlpha → Saturate → Alpha; GridColor (HDR) → Base Color | Faint cyan tint with bright grid lines |
+
+Exposed properties: `GridColor`, `GridScale`, `LineWidth`, `FillAlpha`.
+
+## Getting Started
 
 ### Requirements
+- Unity `6000.3.24f1 LTS` with **Android Build Support** (OpenJDK and Android SDK and NDK)
+- An **ARCore-supported Android phone** with Google Play Services for AR installed
+- USB debugging enabled
 
-- Unity `6000.3.24f1 LTS`
-- Unity Android Build Support, including Android SDK, NDK, and OpenJDK
-- An ARCore-supported Android phone
-- Google Play Services for AR installed on the phone
-- USB debugging enabled if deploying over USB
-
-### Open and run the project
-
-1. Clone the repository:
-
+### Run the project
+1. Clone the repo:
    ```bash
    git clone https://github.com/sriram-game-dev/The-Blitz-Arena.git
    cd The-Blitz-Arena
    ```
+2. Open the project in Unity Hub with the matching Unity version.
+3. Open the main scene: `Assets/Blitz Arena/Scenes/Scene_Ar_0.0.0`.
+4. **File → Build Profiles → Android → Switch Platform.**
+5. Connect your phone, select it under **Run Device**, and click **Build And Run**.
 
-2. Open the project in Unity Hub using the Unity version listed above.
-3. Open the main AR scene:
+### Android settings used
+- Minimum API Level: 30+
+- Scripting Backend: IL2CPP, Target Architecture: ARM64
+- Graphics API: OpenGLES3
+- XR Plug-in Management → Android → **ARCore** enabled
+- URP Renderer: **AR Background Renderer Feature** added
+- URP asset: HDR enabled, Global Volume with Bloom
 
-   `Assets/Blitz Arena/Scenes/Scene_Ar_0.0.0`
+> AR features (camera feed, plane detection) do not work in the Unity Editor. Test on a real device.
 
-4. In Unity, open **File → Build Profiles**, select **Android**, and switch platform if needed.
-5. Confirm ARCore is enabled under **XR Plug-in Management → Android**.
-6. Connect an ARCore-supported Android phone and select it as the Run Device.
-7. Select **Build And Run**.
-
-### Android build configuration
-
-- Minimum API Level: `30+`
-- Scripting Backend: `IL2CPP`
-- Target Architecture: `ARM64`
-- Graphics API: `OpenGLES3`
-- AR provider: Google ARCore XR Plugin
-- URP: Ensure the AR Background Renderer Feature is configured.
-- Post-processing: HDR and Bloom are used for the energy effects.
-
-> **Note:** AR camera passthrough and plane detection require a supported physical device; they cannot be fully tested in the standard Unity Editor Game view.
-
-## 🕹 Controls
+## Controls
 
 | Action | Input |
 |---|---|
-| Scan a surface | Move the phone to view the floor or table |
-| Place the arena | Tap a detected surface |
-| Fire | Tap the **FIRE** button |
-| Play again | Tap **Restart** after the wave is cleared |
-
-## 📁 Key Project Structure
-
-```text
-Assets/
-└── Blitz Arena/
-    ├── Scenes/          # Main AR scene
-    ├── Script/
-    │   ├── AR/          # AR placement and anchoring
-    │   ├── Gameplay/    # Cannon, projectile, target logic
-    │   └── Managers/    # Game state, UI, shared references
-    ├── ShaderGraph/     # Energy target and plane grid shaders
-    ├── ShaderMaterial/  # Materials and VFX materials
-    ├── Prefab/          # Targets, projectiles, explosions, plane
-    ├── EFX/             # Sound effects
-    ├── Environment/     # Arena base and environment assets
-    └── UI/              # Fonts, images, and UI shapes
-
-Project Detail/           # Project screenshots and presentation images
-```
-
-## 🧪 Testing Checklist
-
-- [ ] Plane detection works on a supported Android device.
-- [ ] The arena places flat on the detected surface and remains anchored.
-- [ ] UI taps do not accidentally place or move the arena.
-- [ ] Firing, projectile collision, and target destruction work correctly.
-- [ ] Each successful hit adds 10 points.
-- [ ] Clearing all three targets displays the wave-completion state.
-- [ ] Restart allows the intended next gameplay session.
-- [ ] The Android build launches and runs on the target device.
+| Place arena | Tap the screen on a detected surface |
+| Shoot | Tap the **FIRE** button |
+| Play again | Tap **Restart** after WAVE CLEARED |
 
 ## 👤 Author
 
 **Sriram S**
-
 - GitHub: [@sriram-game-dev](https://github.com/sriram-game-dev)
 - Portfolio: [sriram-game-dev.github.io/profile](https://sriram-game-dev.github.io/profile/)
-
-## 📄 Project Information
-
-- **Project duration:** 7–9 October 2026
-- **Platform:** Android AR
-- **Repository:** [The-Blitz-Arena](https://github.com/sriram-game-dev/The-Blitz-Arena)
