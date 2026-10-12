@@ -74,26 +74,32 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 
 <table>
   <tr>
-    <td align="center" width="50%">
+    <td align="center" width="33.33%">
       <img
         src="Project%20Detail/3.png"
         alt="The Blitz Arena - Firing Preview"
         width="100%"
       />
+      <br/>
+      <b>Firing</b>
     </td>
-    <td align="center" width="50%">
+    <td align="center" width="33.33%">
       <img
         src="Project%20Detail/4.png"
         alt="The Blitz Arena - Hit Preview"
         width="100%"
       />
+      <br/>
+      <b>Target Hit</b>
     </td>
-        <td align="center" width="50%">
+    <td align="center" width="33.33%">
       <img
         src="Project%20Detail/WaveCompleted.png"
-        alt="The Blitz Arena - Hit Preview"
+        alt="The Blitz Arena - Wave Completed"
         width="100%"
       />
+      <br/>
+      <b>Wave Completed</b>
     </td>
   </tr>
 </table>
