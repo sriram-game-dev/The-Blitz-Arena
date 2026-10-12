@@ -72,6 +72,25 @@ Scan a surface, tap to place the arena, then shoot energy-filled targets with a 
 - Score counter UI and **WAVE CLEARED** message when all targets are cleared
 - Sound effects for firing and explosions
 
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img
+        src="Project%20Detail/3.png"
+        alt="The Blitz Arena - Firing Preview"
+        width="100%"
+      />
+    </td>
+    <td align="center" width="50%">
+      <img
+        src="Project%20Detail/4.png"
+        alt="The Blitz Arena - Hit Preview"
+        width="100%"
+      />
+    </td>
+  </tr>
+</table>
+
 ## Tech Stack
 
 | | |
